@@ -1,45 +1,153 @@
-// const User =require('../modals/Usermodal')
+const User = require("../modals/Usermodal");
+const bcrypt = require("bcrypt");
+
+exports.registerUser = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+      return res.status(400).send({ message: "All Fields Are Required" });
+    }
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).send({ message: "Email Already Exists" });
+    }
+
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const user = await User.create({ username, email, password: passwordHash });
+
+    res.status(201).send({ message: "User Created Successfully" });
+  } catch (error) {
+    res.status(500).send({ message: "Internal Server Error" });
+    console.log(error);
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(401).send({ message: "All fields are Required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).send({ message: "Email is not registered" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log(passwordMatch);
+
+    if (!passwordMatch) {
+      return res.status(401).send({ message: "Password is incorrect" });
+    }
+
+    res.status(200).send({ message: `user_id:${user.id}` });
+    console.log(user.id);
+  } catch (error) {
+    res.status(500).send({ message: "Internal Server Error" });
+    console.log(error);
+  }
+};
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const allusers = await User.find();
+    res.status(200).send({ message: "All Users", allusers });
+    // res.status(200).send({message:"All Users",alluser})
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+exports.getUserById = async (req, res) => {
+  try {
+    const userwithid = await User.findById(req.body.userid);
+    if (!userwithid) {
+      console.log("no user with id " + req.body.userid);
+      return res
+        .status(404)
+        .send({ message: "no user with id " + req.body.userid });
+    }
+    if (userwithid) {
+      res.status(200).send({ message: "User with id", userwithid });
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+exports.deleteUserById = async (req, res) => {
+    try {
+        const userId = req.params.id; // Assuming the user ID is in the URL parameter
+
+        // 
+        // Use deleteOne with the correct query object
+        const result = await User.deleteOne({ _id: userId }); 
+   
+       // Check if the deletion was successful
+       if (result.deletedCount === 0) {
+        console.log(result);
+         return res.status(404).send({ message: "User with id " + userId + " Doesn't Exist" });
+       }
+   
+       res.status(200).send({ message: "User with id " + userId + " Deleted" });
+    } catch (error) {
+       console.log(error.message);
+       res.status(500).send({ message: "Internal Server Error" });
+    }
+   };
 
 
-// exports.registerUser=async(req,res)=>{
+exports.verifyEmail=async(req,res)=>{
+    try{
+const user=await User.findOne({email:req.body.email})
+
+if(!user){ res.status(404).send({message:"Email Does Not Exist"});}
+if(user){return res.status(201).send({message:"Email Found successfully"});}
+    }catch(error){
+res.status(404).send({message:"Internal server error"});
+    }
+}
+
+
+// exports.changePassword=async(req,res)=>{
 //     try{
-//         const user=new User(req.body)
-//         await user.save()
-//         res.status(201).send({user})
+// const user =await User.findOne({email:req.body.email})
+
+// if(!user){ res.status(404).send({message:"User Does Not Exist"});}
+// if(user){
+//     const matchpass =await bcrypt.compare(req.body.password,user.password)
+//     if(!matchpass){
+//         return res.status(404).send({message:"Password Does Not Match"});
+//     }else{
+//         User.password.update(matchpass)
+//         console.log("Password",user.password)
+//     }
+// }
 //     }catch(error){
-//         res.status(500).send({error:"error in registerUser"})
+//         console.log(error.message);
+//         res.status(404).send({message:"Internal server error"});
 //     }
 // }
 
 
-// exports.login=async(req,res)=>{
+exports.changePassword=async (req, res) => {
+    try{
+        const userpassword=await User.find(req.params.password)
+        console.log(userpassword)   
+        if(userpassword){await User.update(userpassword);}
+        if(!userpassword){res.status(404).send({message:"User Does Not Exist"});}
 
-// }
-
-
-const User = require('../modals/Usermodal')
-
-exports.registerUser = async (req, res) => {
-    try {
-        const { username, email, password } = req.body
-
-        if (!username || !email || !password) {
-            res.status(400).send({ message: "All Fields Are Required" })
-        }
-
-        const existingUser = await User.findOne({ email })
-
-        if (existingUser) {
-            return res.status(400).send({ message: "Email Already Exists" })
-            console.log(error.message)
-        }
-                                // new User({ name: username, email, password })
-        const newUser = await new User({ username, email, password })
-        await newUser.save()
-
-        res.status(201).send({ message: "User Created Successfully" })
-
-    } catch (error) {
-        res.status(500).send({ message: "Internal Server Error" });
+    }catch(error){
+    console.log(error.message);
+    res.status(500).send({message:"Internal server error"});
     }
 }
