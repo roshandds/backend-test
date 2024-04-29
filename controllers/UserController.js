@@ -48,8 +48,8 @@ exports.loginUser = async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).send({ message: "Password is incorrect" });
     }
-
-    res.status(200).send({ message: `user_id:${user.id}` });
+    delete user.password
+    res.status(200).send({ message: `user loging successfully`, success: true, data: user  });
     console.log(user.id);
   } catch (error) {
     res.status(500).send({ message: "Internal Server Error" });
@@ -139,6 +139,9 @@ res.status(404).send({message:"Internal server error"});
 // }
 
 
+
+
+
 exports.changePassword=async (req, res) => {
     try{
         const userpassword=await User.find(req.params.password)
@@ -151,3 +154,7 @@ exports.changePassword=async (req, res) => {
     res.status(500).send({message:"Internal server error"});
     }
 }
+
+
+
+
