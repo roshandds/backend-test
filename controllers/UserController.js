@@ -1,6 +1,8 @@
 const User = require("../modals/Usermodal");
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
+const secretKey = 'valarmorghuis';
 exports.registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -28,34 +30,34 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-exports.loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+// exports.loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(401).send({ message: "All fields are Required" });
-    }
+//     if (!email || !password) {
+//       return res.status(401).send({ message: "All fields are Required" });
+//     }
 
-    const user = await User.findOne({ email });
+//     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(401).send({ message: "Email is not registered" });
-    }
+//     if (!user) {
+//       return res.status(401).send({ message: "Email is not registered" });
+//     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    console.log(passwordMatch);
+//     const passwordMatch = await bcrypt.compare(password, user.password);
+//     console.log(passwordMatch);
 
-    if (!passwordMatch) {
-      return res.status(401).send({ message: "Password is incorrect" });
-    }
-    delete user.password
-    res.status(200).send({ message: `user loging successfully`, success: true, data: user  });
-    console.log(user.id);
-  } catch (error) {
-    res.status(500).send({ message: "Internal Server Error" });
-    console.log(error);
-  }
-};
+//     if (!passwordMatch) {
+//       return res.status(401).send({ message: "Password is incorrect" });
+//     }
+//     delete user.password
+//     res.status(200).send({ message: `user loging successfully`, success: true, data: user  });
+//     console.log(user.id);
+//   } catch (error) {
+//     res.status(500).send({ message: "Internal Server Error" });
+//     console.log(error);
+//   }
+// };
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -64,6 +66,36 @@ exports.getAllUsers = async (req, res) => {
     // res.status(200).send({message:"All Users",alluser})
   } catch (error) {
     console.log(error.message);
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(401).send({ message: 'All fields are required' });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).send({ message: 'Email is not registered' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return res.status(401).send({ message: 'Password is incorrect' });
+    }
+
+    // Generate JWT
+    const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '1h' });
+
+    res.status(200).send({ message: 'User logged in successfully', token });
+  } catch (error) {
+    res.status(500).send({ message: 'Internal Server Error' });
+    console.log(error);
   }
 };
 

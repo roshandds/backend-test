@@ -11,7 +11,7 @@ dotenv.config();
 
 // Use environment variables for port and database URL
 const PORT = process.env.PORT || 3000;
-const DB_URL = process.env.DB_URL || 'mongodb+srv://RoshanChaudhari:RoshanChaudhari@roshan.armduui.mongodb.net/?retryWrites=true&w=majority&appName=roshan'; // Replace with your actual MongoDB connection string
+const DB_URL = process.env.Db_Url ;
 
 const app = express();
 const server = require('http').createServer(app); // Pass the Express app to createServer
