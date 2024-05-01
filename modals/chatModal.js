@@ -2,7 +2,7 @@ const mongoose=require('mongoose');
 
 const chatSchema=new mongoose.Schema({
     senderId:{type: mongoose.Schema.Types.ObjectId,required:true},
-    ReceiverId:{type: mongoose.Schema.Types.ObjectId,required:true},
+    receiverId:{type: mongoose.Schema.Types.ObjectId,required:true},
     mergeId:{type: String,required:true},
     message:{type: String},
     media:{type: String},

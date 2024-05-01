@@ -7,10 +7,12 @@ const UserRoutes=require('./routes/UserRoutes')
 const jwt = require('jsonwebtoken');
 const Server=require('socket.io')
 const createServer =require('http')
+const sendMessage=require('./controllers/ChatController')
+const isReceiverOnline=require('./controllers/ChatController')
 dotenv.config();
 
 // Use environment variables for port and database URL
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ;
 const DB_URL = process.env.Db_Url ;
 
 const app = express();
@@ -50,12 +52,34 @@ console.log("User connected",socket.id)
 socket.on('login',({id})=>{
 console.log("User logged in",id)
 socket.join(id)
+// jonid(receiverId,senderId)
 //update the status of user offline to online ...
 //updateStatus()
+// io.in(id).emit('login_res',"login successful")   
 })
 //message socket io 
-socket.on('message',()=>{
-    
+socket.on('message',(msg)=>{
+    sendMessage(msg);
+    isReceiverOnline(msg.receiverId)
+    .then((res) => {
+      if (res === false) {
+        io.in(msg.receiverId).emit('show_notification', {
+          title: 'you have new message in Angular chat app',
+          message: msg.message,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    io.in(msg.receiverId).emit('getMessage', msg);
+})
+socket.on('get-all-messages',(data) => {
+    console.log("mergeid",data);
+    getMessage(data.mergeId).then((response) => {
+        console.log(response);
+    },err => console.log(err.message));
+
 })
 
 })
