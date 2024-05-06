@@ -93,7 +93,7 @@ exports.loginUser = async (req, res) => {
     // Generate JWT
     const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '1h' });
 
-    res.status(200).send({ message: 'User logged in successfully', token });
+    res.status(200).send({ message: 'User logged in successfully', token ,data:user});
   } catch (error) {
     res.status(500).send({ message: 'Internal Server Error' });
     console.log(error);

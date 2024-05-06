@@ -65,7 +65,7 @@ socket.on('message',(msg)=>{
       if (res === false) {
         io.in(msg.receiverId).emit('show_notification', {
           title: 'you have new message in Angular chat app',
-          message: msg.message,
+          message: msg.message, 
         });
       }
     })
