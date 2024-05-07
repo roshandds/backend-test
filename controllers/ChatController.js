@@ -1,6 +1,7 @@
 const chatSchema = require("../modals/chatModal");
 
 async function sendMessage(data) {
+  console.log('sendmessageworks')
   if (!data.message) {
     return;
   }
@@ -21,7 +22,7 @@ async function isReceiverOnline (receiverId) {
 };
 
 
-exports.getMessage=async(mergeId)=>{
+exports.getMessage=async()=>{
 try{
   const messages = await chatModel.find({ mergeId });
 console.log(messages);

@@ -13,8 +13,9 @@ const jonid=require('./controllers/ChatController')
 dotenv.config();
 
 // Use environment variables for port and database URL
-const PORT = process.env.PORT ;
-const DB_URL = process.env.Db_Url ;
+const PORT = 3000 
+// process.env.PORT ;
+const DB_URL = 'mongodb+srv://RoshanChaudhari:RoshanChaudhari@roshan.armduui.mongodb.net/?retryWrites=true&w=majority&appName=roshan'
 
 const app = express();
 const server = require('http').createServer(app); // Pass the Express app to createServer
@@ -63,22 +64,47 @@ socket.join(id)
 // io.in(id).emit('login_res',"login successful")   
 })
 //message socket io 
-socket.on('message',(msg)=>{
-    sendMessage(msg);
-    isReceiverOnline(msg.receiverId)
+// socket.on('message',(msg)=>{
+//   console.log(msg.senderId,"messagelog")
+//   console.log('messageeventcall')
+//     sendMessage(msg);
+//     isReceiverOnline(msg.receiverId)
+//     .then((res) => {
+//       console.log('reslog',res)
+//       if (res === false) {
+//         io.in(msg.receiverId).emit('show_notification', {
+//           title: 'you have new message in Angular chat app',
+//           message: msg.message, 
+//         });
+//       }
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+//     io.in(msg.receiverId).emit('getMessage', msg);
+// })
+socket.on('message', (msg) => {
+  console.log(msg.senderId, "messagelog");
+  console.log('messageeventcall');
+  // Call sendMessage function with the received message
+  sendMessage(msg);
+  isReceiverOnline(msg.receiverId)
     .then((res) => {
+      console.log('reslog', res)
       if (res === false) {
         io.in(msg.receiverId).emit('show_notification', {
           title: 'you have new message in Angular chat app',
-          message: msg.message, 
+          message: msg.message,
         });
       }
     })
     .catch((error) => {
       console.log(error);
     });
-    io.in(msg.receiverId).emit('getMessage', msg);
-})
+
+    console.log("msg.receiverId)msg.receiverId)",msg.receiverId)
+  io.in(msg.receiverId).emit('getMessage', msg);
+});
 socket.on('get-all-messages',(data) => {
     console.log("mergeid",data);
     getMessage(data.mergeId).then((response) => {
