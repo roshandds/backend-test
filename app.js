@@ -9,6 +9,7 @@ const Server=require('socket.io')
 const createServer =require('http')
 const sendMessage=require('./controllers/ChatController')
 const isReceiverOnline=require('./controllers/ChatController')
+const jonid=require('./controllers/ChatController')
 dotenv.config();
 
 // Use environment variables for port and database URL
@@ -52,7 +53,11 @@ console.log("User connected",socket.id)
 socket.on('login',({id})=>{
 console.log("User logged in",id)
 socket.join(id)
-// jonid(receiverId,senderId)
+// jonid(receiverId,senderId).then((res)=>{
+//   console.logo(res)
+// },err=>{
+//   conosle.log(err)
+// })
 //update the status of user offline to online ...
 //updateStatus()
 // io.in(id).emit('login_res',"login successful")   
