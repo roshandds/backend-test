@@ -6,10 +6,11 @@ const dotenv=require('dotenv')
 const UserRoutes=require('./routes/UserRoutes')
 const jwt = require('jsonwebtoken');  
 const Server=require('socket.io')
-const createServer =require('http')
-const sendMessage=require('./controllers/ChatController')
-const isReceiverOnline=require('./controllers/ChatController')
-const jonid=require('./controllers/ChatController')
+const createServer =require('http');
+const { sendMessage, isReceiverOnline, getMessage } = require('./controllers/ChatController');
+// const sendMessage=require('./controllers/ChatController')
+// const isReceiverOnline=require('./controllers/ChatController')
+// const jonid=require('./controllers/ChatController')
 dotenv.config();
 
 // Use environment variables for port and database URL

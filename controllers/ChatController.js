@@ -1,13 +1,12 @@
 const chatSchema = require("../modals/chatModal");
 
 async function sendMessage(data) {
-  console.log('sendmessageworks')
   if (!data.message) {
     return;
   }
   try {
     let messageObj = await chatSchema.create({ ...data, message: data.message });
-    console.log(messageObj, "sendMessage");
+    console.log(messageObj, "sendMessage11111111");
     return messageObj;
   } catch (error) {
     console.error("Error sending message:", error);
@@ -22,15 +21,9 @@ async function isReceiverOnline (receiverId) {
 };
 
 
-exports.getMessage=async()=>{
-try{
-  const messages = await chatModel.find({ mergeId });
-console.log(messages);
-return messages;
-}catch(error){
-  console.log(error.message)
+async function getMessage(mergeId) {
+  console.log("mergeidinfunction")
 
-}
 }
 
 
@@ -54,4 +47,4 @@ exports.jonid=async(senderId,receiverId)=>{
 
 
 
-module.exports = sendMessage,isReceiverOnline;
+module.exports = {sendMessage,isReceiverOnline, getMessage};
